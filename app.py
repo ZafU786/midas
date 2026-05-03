@@ -609,16 +609,34 @@ with st.sidebar:
         st.metric("想定総利益", f"¥{int(total_profit):,}")
 
     st.markdown("---")
-    st.markdown(
-        """
-        <div class="ad-slot ad-square">
-            <div style="font-size:1.5rem;">📢</div>
-            <div style="margin-top:0.5rem;font-weight:600;color:#f4e4a1;">PR枠 (300×250)</div>
-            <div style="margin-top:0.4rem;font-size:0.75rem;">サイドバー広告枠<br>AdSense / アフィリエイト</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # サイドバー：楽天デイリーランキング誘導
+    _aff = os.getenv("RAKUTEN_AFFILIATE_ID", "")
+    if _aff:
+        import urllib.parse as _up
+        _target = _up.quote("https://ranking.rakuten.co.jp/daily/", safe="")
+        _aff_url = f"https://hb.afl.rakuten.co.jp/hgc/{_aff}/?pc={_target}&m={_target}"
+        st.markdown(
+            f'<a href="{_aff_url}" target="_blank" rel="nofollow sponsored" '
+            'style="display:block;text-decoration:none;'
+            'background:linear-gradient(135deg,rgba(191,0,0,0.18),rgba(212,175,55,0.05));'
+            'border:1px solid rgba(212,175,55,0.4);border-radius:12px;'
+            'padding:1rem;text-align:center;color:#f4e4a1;">'
+            '<div style="font-size:0.7rem;color:#bf0000;font-weight:700;letter-spacing:0.1em;">PR · 楽天</div>'
+            '<div style="font-size:1.8rem;margin:0.3rem 0;">👑</div>'
+            '<div style="font-weight:700;font-size:0.95rem;color:#f4e4a1;">デイリーランキング</div>'
+            '<div style="font-size:0.75rem;color:#c5c8d8;margin-top:0.3rem;">今売れてる商品をチェック</div>'
+            '</a>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            '<div class="ad-slot ad-square">'
+            '<div style="font-size:1.5rem;">📢</div>'
+            '<div style="margin-top:0.5rem;font-weight:600;color:#f4e4a1;">PR枠</div>'
+            '<div style="margin-top:0.4rem;font-size:0.75rem;">アフィID未設定</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
     st.markdown(
@@ -1031,15 +1049,8 @@ if st.session_state.get("show_guide", False):
 
 # （APIキー未設定時のゲートは、バリュー紹介セクション後で実施 → 後段で）
 
-# ========== トップ広告枠 ==========
-st.markdown(
-    """
-    <div class="ad-slot ad-banner">
-        📢 PR枠 (728×90) — Google AdSense / アフィリエイト広告をここに配置
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# ========== トップ広告枠：楽天アフィリエイト ==========
+st.markdown(links.get_top_banner_html(), unsafe_allow_html=True)
 
 # ========== APIキーゲート ==========
 if not user_key:
@@ -1465,16 +1476,9 @@ with tab4:
                 st.rerun()
 
 
-# ========== フッター広告 ==========
+# ========== フッター広告：楽天ジャンル別 ==========
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-st.markdown(
-    """
-    <div class="ad-slot ad-banner">
-        📢 PR枠 (728×90) — フッター広告 / アフィリエイトリンク配置エリア
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown(links.get_footer_banner_html(), unsafe_allow_html=True)
 
 # ========== 「使い方」セクション ==========
 st.markdown('<div class="section-header">USE CASES</div>', unsafe_allow_html=True)
