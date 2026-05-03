@@ -31,7 +31,7 @@ st.set_page_config(
     page_title="MIDAS | 究極のせどりインテリジェンス",
     page_icon="👑",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",  # スマホでは自動折りたたみ
 )
 
 # ========== プレミアムCSS ==========
@@ -545,6 +545,135 @@ st.markdown(
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     header { visibility: hidden; }
+
+    /* ============ サイドバー開閉ボタンを目立たせる ============ */
+    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
+        background: linear-gradient(135deg, #d4af37, #b8932d) !important;
+        border-radius: 8px !important;
+        color: #0a0e27 !important;
+        padding: 8px !important;
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4) !important;
+        z-index: 999999 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] svg, [data-testid="collapsedControl"] svg {
+        color: #0a0e27 !important;
+        fill: #0a0e27 !important;
+    }
+
+    /* ============ レスポンシブ：タブレット (≤960px) ============ */
+    @media (max-width: 960px) {
+        .premium-hero h1 { font-size: 3.5rem !important; }
+        .premium-hero .subtitle { font-size: 0.75rem !important; letter-spacing: 0.25em !important; }
+        .premium-hero .hero-tagline { font-size: 1rem !important; }
+
+        .main .block-container {
+            padding: 1rem 0.6rem !important;
+        }
+
+        /* グリッド類をスマホで2列に */
+        .value-prop, .credibility-bar {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+
+    /* ============ レスポンシブ：スマホ (≤640px) ============ */
+    @media (max-width: 640px) {
+        /* ヒーロー縮小 */
+        .premium-hero {
+            padding: 1.2rem 0 0.8rem 0 !important;
+            margin-bottom: 1rem !important;
+        }
+        .premium-hero h1 {
+            font-size: 2.4rem !important;
+            letter-spacing: 0.12em !important;
+        }
+        .premium-hero .hero-emblem {
+            font-size: 0.9rem !important;
+            letter-spacing: 0.3em !important;
+        }
+        .premium-hero .subtitle {
+            font-size: 0.65rem !important;
+            letter-spacing: 0.2em !important;
+        }
+        .premium-hero .hero-tagline {
+            font-size: 0.85rem !important;
+        }
+
+        /* メインの余白を圧縮 */
+        .main .block-container {
+            padding: 0.5rem 0.4rem !important;
+            max-width: 100% !important;
+        }
+
+        /* タブを横スクロール可能に */
+        .stTabs [data-baseweb="tab-list"] {
+            overflow-x: auto !important;
+            scrollbar-width: none !important;
+            flex-wrap: nowrap !important;
+        }
+        .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar { display: none; }
+        .stTabs [data-baseweb="tab"] {
+            padding: 8px 14px !important;
+            font-size: 0.8rem !important;
+            white-space: nowrap !important;
+        }
+
+        /* 全グリッドを1列に */
+        .value-prop, .credibility-bar {
+            grid-template-columns: 1fr !important;
+            gap: 0.6rem !important;
+        }
+        .value-card { padding: 1rem 0.8rem !important; }
+
+        /* 商品カード調整 */
+        .pc-img { height: 140px !important; }
+        .pc-body { padding: 0.7rem 0.8rem !important; }
+        .pc-title { font-size: 0.9rem !important; min-height: 2.4em !important; }
+        .pc-pval { font-size: 0.85rem !important; }
+        .pc-profit { font-size: 1.1rem !important; }
+        .pc-cta { padding: 0.55rem 0.6rem !important; font-size: 0.78rem !important; }
+
+        /* メトリクス縮小 */
+        [data-testid="stMetricValue"] { font-size: 1.6rem !important; }
+
+        /* 入力欄スマホ最適化 */
+        .stTextInput input, .stNumberInput input, .stSelectbox > div > div {
+            font-size: 0.9rem !important;
+            padding: 0.5rem 0.7rem !important;
+        }
+        label, [data-testid="stWidgetLabel"] {
+            font-size: 0.8rem !important;
+        }
+
+        /* バナー縮小 */
+        .ad-slot.ad-banner { padding: 0.7rem !important; font-size: 0.7rem !important; }
+
+        /* セクションタイトル */
+        .section-header { font-size: 1.4rem !important; }
+
+        /* ガイドカード */
+        .guide-card { padding: 1rem 1.1rem !important; }
+        .guide-step-num { width: 28px !important; height: 28px !important; line-height: 28px !important; font-size: 0.95rem !important; }
+        .guide-step-title { font-size: 1rem !important; }
+        .guide-step-body { font-size: 0.85rem !important; padding-left: 2.4rem !important; line-height: 1.6 !important; }
+
+        /* サイドバーをスマホでは画面幅優先 */
+        [data-testid="stSidebar"] {
+            width: 85vw !important;
+            min-width: 280px !important;
+        }
+    }
+
+    /* ============ 極小デバイス (≤380px) ============ */
+    @media (max-width: 380px) {
+        .premium-hero h1 { font-size: 2rem !important; }
+        .stTabs [data-baseweb="tab"] { padding: 6px 10px !important; font-size: 0.72rem !important; }
+        .pc-title { font-size: 0.85rem !important; }
+    }
+
+    /* ============ 横スクロール防止 ============ */
+    body { overflow-x: hidden !important; }
+    .stApp { overflow-x: hidden !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -558,7 +687,15 @@ st.markdown(
         <h1>MIDAS</h1>
         <div class="subtitle">THE ULTIMATE RESELLING ORACLE</div>
         <div class="hero-tagline">触れた商品を、すべて利益に変える</div>
+        <div class="mobile-hint" style="display:none;color:#9ca3c4;font-size:0.78rem;margin-top:1rem;padding:0.5rem 1rem;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:8px;">
+            ← 左上の <span style="color:#f4e4a1;font-weight:700;">▶</span> ボタンで設定メニュー
+        </div>
     </div>
+    <style>
+    @media (max-width: 640px) {
+        .mobile-hint { display: block !important; }
+    }
+    </style>
     """,
     unsafe_allow_html=True,
 )
