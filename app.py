@@ -18,6 +18,14 @@ ENV_PATH = Path(__file__).parent / ".env"
 if ENV_PATH.exists():
     load_dotenv(dotenv_path=ENV_PATH, override=True)
 
+# Streamlit Cloudの secrets を環境変数にマージ（アフィリエイトタグ等）
+try:
+    for _k, _v in st.secrets.items():
+        if isinstance(_v, str) and _k not in os.environ:
+            os.environ[_k] = _v
+except Exception:
+    pass  # secrets未設定の環境ではスキップ
+
 # ========== ページ設定 ==========
 st.set_page_config(
     page_title="MIDAS | 究極のせどりインテリジェンス",
@@ -578,6 +586,12 @@ with st.sidebar:
 
     if st.button("📖  使い方ガイドを見る", use_container_width=True):
         st.session_state["show_guide"] = not st.session_state.get("show_guide", False)
+        st.session_state["show_legal"] = False
+        st.rerun()
+
+    if st.button("📜  利用規約・プライバシー", use_container_width=True):
+        st.session_state["show_legal"] = not st.session_state.get("show_legal", False)
+        st.session_state["show_guide"] = False
         st.rerun()
 
     st.markdown("---")
@@ -622,6 +636,138 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
+
+
+# ==============================================================================
+# 利用規約・プライバシーポリシーページ
+# ==============================================================================
+if st.session_state.get("show_legal", False):
+    st.markdown(
+        '<h2 style="text-align:center;color:#f4e4a1;font-family:Cormorant Garamond,serif;font-size:2.3rem;letter-spacing:0.1em;margin-bottom:0.3rem;">LEGAL</h2>'
+        '<div style="text-align:center;color:#c5c8d8;margin-bottom:2rem;">利用規約・プライバシーポリシー</div>',
+        unsafe_allow_html=True,
+    )
+    if st.button("← トップへ戻る", key="back_legal_top"):
+        st.session_state["show_legal"] = False
+        st.rerun()
+
+    st.markdown(
+        """
+<style>
+.legal-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1rem;
+    color: #e8e8f0;
+    line-height: 1.8;
+}
+.legal-section h3 {
+    color: #f4e4a1;
+    font-size: 1.15rem;
+    margin: 0 0 0.6rem 0;
+}
+.legal-section h4 {
+    color: #d4af37;
+    font-size: 0.95rem;
+    margin: 1rem 0 0.4rem 0;
+}
+.legal-section p, .legal-section li {
+    color: #c5c8d8;
+    font-size: 0.9rem;
+}
+</style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+<div class="legal-section">
+<h3>📜 利用規約</h3>
+
+<h4>第1条（サービス概要）</h4>
+<p>MIDAS（以下「本サービス」）は、AI（Google Gemini API）を用いて、せどり・転売目的の商品リサーチ支援機能を提供するウェブツールです。</p>
+
+<h4>第2条（利用方法）</h4>
+<p>利用者は、自身で取得したGoogle Gemini APIキーを入力することで本サービスを利用できます。APIキーは利用者のブラウザセッション内のみで保持され、当サーバーには保存されません。</p>
+
+<h4>第3条（禁止事項）</h4>
+<ul>
+<li>法令または公序良俗に反する行為</li>
+<li>本サービスの運営を妨害する行為</li>
+<li>不正なAPIキーの使用、または他者のキーを無断で使用すること</li>
+<li>本サービスを利用した違法商品・規制商品の取引</li>
+</ul>
+
+<h4>第4条（免責事項）</h4>
+<p>本サービスが表示する価格・需要・利益額等の情報は、AIによる<b>推定値</b>であり、正確性・完全性・最新性を保証するものではありません。実際の取引に関する判断および結果については、すべて利用者の自己責任となります。</p>
+<p>本サービスの利用によって生じたいかなる損害（仕入れた商品が売れない、想定より安く売れた、出品先のアカウント停止等）についても、運営者は一切の責任を負いません。</p>
+
+<h4>第5条（サービス変更・停止）</h4>
+<p>運営者は、利用者への事前通知なく、本サービスの内容を変更・停止する場合があります。</p>
+
+<h4>第6条（広告・アフィリエイト）</h4>
+<p>本サービスはアフィリエイト広告および第三者広告（Google AdSense等）を掲載することがあります。リンク先での取引については、各サイトの利用規約に従ってください。</p>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+<div class="legal-section">
+<h3>🔒 プライバシーポリシー</h3>
+
+<h4>1. 収集する情報</h4>
+<p>本サービスは、利用者から以下の情報を取得することがあります：</p>
+<ul>
+<li>アクセスログ（IPアドレス・ブラウザ情報・アクセス日時）</li>
+<li>Cookie（広告配信および利用状況分析のため）</li>
+<li>利用者が入力した検索条件・商品名（AI処理のためGoogleに送信）</li>
+</ul>
+<p><b>APIキーはブラウザセッション内でのみ保持され、サーバーへは送信されません。</b></p>
+
+<h4>2. 情報の利用目的</h4>
+<ul>
+<li>本サービスの提供および機能改善</li>
+<li>不正利用の防止</li>
+<li>広告配信の最適化</li>
+</ul>
+
+<h4>3. 第三者への提供</h4>
+<p>以下の第三者サービスに対し、必要最小限の情報を送信することがあります：</p>
+<ul>
+<li><b>Google Gemini API</b> — 商品名・カテゴリ等の検索クエリ</li>
+<li><b>Pollinations.ai</b> — 商品名（画像生成プロンプト用）</li>
+<li><b>Google AdSense / アフィリエイト ASP</b> — Cookieによる広告配信</li>
+</ul>
+
+<h4>4. Cookieの使用</h4>
+<p>本サービスはGoogleアナリティクス・AdSense等のCookieを使用することがあります。ブラウザ設定からCookieを無効化することで利用を拒否できますが、一部機能が制限される場合があります。</p>
+
+<h4>5. お問い合わせ</h4>
+<p>本ポリシーに関するお問い合わせは、運営者までご連絡ください。</p>
+
+<h4>6. 改定</h4>
+<p>本ポリシーは予告なく改定されることがあります。改定後の内容は本ページに掲載した時点で効力を生じます。</p>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div style="text-align:center;color:#9ca3c4;font-size:0.85rem;margin-top:2rem;">'
+        '最終更新: 2026年5月 / © MIDAS'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    if st.button("← トップへ戻る", key="back_legal_bottom", use_container_width=True):
+        st.session_state["show_legal"] = False
+        st.rerun()
+    st.stop()
 
 
 # ==============================================================================
@@ -1365,8 +1511,9 @@ st.markdown(
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:#d4af37;letter-spacing:0.2em;">MIDAS</div>
         <div style="font-size:0.8rem;letter-spacing:0.2em;margin-top:0.4rem;">THE ULTIMATE RESELLING ORACLE</div>
         <div style="margin-top:1.2rem;font-size:0.75rem;line-height:1.8;">
-            © 2026 MIDAS. Powered by Claude AI &amp; Pollinations.<br>
-            本サービスはAIによる相場推定ツールです。実取引の最終判断はご自身でお願いします。
+            © 2026 MIDAS. Powered by Google Gemini &amp; Pollinations AI.<br>
+            本サービスはAIによる相場推定ツールです。実取引の最終判断はご自身でお願いします。<br>
+            <span style="color:#d4af37;">サイドバーから 利用規約・プライバシーポリシー をご確認ください</span>
         </div>
     </div>
     """,
