@@ -541,30 +541,31 @@ st.markdown(
     }
     ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.5); }
 
-    /* Streamlitの邪魔な要素を非表示（サイドバー開閉ボタンは残す） */
+    /* Streamlitの邪魔な要素を非表示 */
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     /* headerのツールバーのみ非表示（Deploy/Share等） */
     [data-testid="stToolbar"] { visibility: hidden !important; }
-    /* サイドバー開閉ボタンは常時表示 */
+    /* サイドバー開閉ボタンは常時表示・ゴールドスタイル */
     [data-testid="stSidebarCollapsedControl"],
     [data-testid="stSidebarCollapseButton"],
     [data-testid="collapsedControl"] {
+        display: flex !important;
         visibility: visible !important;
+        opacity: 1 !important;
         z-index: 999999 !important;
     }
-    /* サイドバー開閉ボタンをゴールドにスタイリング */
     [data-testid="stSidebarCollapsedControl"] button,
     [data-testid="stSidebarCollapseButton"] button,
     [data-testid="collapsedControl"] button {
         background: linear-gradient(135deg, #d4af37, #b8932d) !important;
         border-radius: 10px !important;
         color: #0a0e27 !important;
+        border: none !important;
         box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4) !important;
+        min-width: 2.5rem !important;
+        min-height: 2.5rem !important;
     }
-
-    /* （サイドバー開閉ボタンのカスタムスタイルは削除：レイアウトを壊すため）
-       代わりにJSで独立した「☰ メニュー」ボタンを画面左上に常時表示する */
 
     /* ============ レスポンシブ：タブレット (≤960px) ============ */
     @media (max-width: 960px) {
@@ -1207,7 +1208,7 @@ if not user_key:
 ② Googleアカウントでログイン<br>
 ③ 「Create API key」をクリック<br>
 ④ 発行された <code style="background:rgba(212,175,55,0.15);padding:0.1rem 0.4rem;border-radius:4px;color:#f4e4a1;">AIza...</code> で始まるキーをコピー<br>
-⑤ <b>左サイドバー「APIキーを入力」欄にペースト</b>
+⑤ 下の入力欄にペースト → スタート！
 </span>
 </div>
 <p style="color:#9ca3c4;font-size:0.85rem;margin-top:1rem;">
@@ -1217,7 +1218,20 @@ if not user_key:
         """,
         unsafe_allow_html=True,
     )
-    st.info("📖 詳しい使い方は左サイドバーの「使い方ガイドを見る」を押してください")
+
+    # ---- メインエリアにも直接入力欄を設置（サイドバー不要） ----
+    col_gate_l, col_gate_c, col_gate_r = st.columns([1, 2, 1])
+    with col_gate_c:
+        gate_key = st.text_input(
+            "🔑 Gemini APIキーを入力してスタート",
+            type="password",
+            placeholder="AIza...",
+            key="gate_key_input",
+        )
+        if gate_key:
+            st.session_state["user_gemini_key"] = gate_key.strip()
+            st.rerun()
+
     st.stop()
 
 
