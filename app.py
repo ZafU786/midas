@@ -32,7 +32,7 @@ st.set_page_config(
     page_title="MIDAS | 究極のせどりインテリジェンス",
     page_icon="👑",
     layout="wide",
-    initial_sidebar_state="auto",  # スマホでは自動折りたたみ
+    initial_sidebar_state="expanded",
 )
 
 # ========== プレミアムCSS ==========
@@ -547,47 +547,8 @@ st.markdown(
     footer { visibility: hidden; }
     header { visibility: hidden; }
 
-    /* ============ サイドバー開閉ボタンを超目立たせる（折りたたみ後でもクリック可能） ============ */
-    /* 折りたたみ状態のボタン（サイドバーを開く）— 全可能セレクタを総当たり */
-    [data-testid="stSidebarCollapsedControl"],
-    [data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapseButton"],
-    button[kind="headerNoPadding"],
-    [data-testid="baseButton-headerNoPadding"] {
-        position: fixed !important;
-        top: 14px !important;
-        left: 14px !important;
-        background: linear-gradient(135deg, #d4af37, #b8932d) !important;
-        color: #0a0e27 !important;
-        border: none !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
-        min-width: 56px !important;
-        min-height: 44px !important;
-        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
-        z-index: 999999 !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-    }
-    [data-testid="stSidebarCollapsedControl"] svg,
-    [data-testid="collapsedControl"] svg,
-    [data-testid="stSidebarCollapseButton"] svg,
-    button[kind="headerNoPadding"] svg {
-        color: #0a0e27 !important;
-        fill: #0a0e27 !important;
-        width: 24px !important;
-        height: 24px !important;
-    }
-    /* ホバー時 */
-    [data-testid="stSidebarCollapsedControl"]:hover,
-    [data-testid="collapsedControl"]:hover {
-        background: linear-gradient(135deg, #f4e4a1, #d4af37) !important;
-        transform: translateY(-2px) !important;
-    }
+    /* （サイドバー開閉ボタンのカスタムスタイルは削除：レイアウトを壊すため）
+       代わりにJSで独立した「☰ メニュー」ボタンを画面左上に常時表示する */
 
     /* ============ レスポンシブ：タブレット (≤960px) ============ */
     @media (max-width: 960px) {
