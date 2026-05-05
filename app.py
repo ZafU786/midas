@@ -9,6 +9,7 @@ import os
 import html
 from pathlib import Path
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -546,18 +547,46 @@ st.markdown(
     footer { visibility: hidden; }
     header { visibility: hidden; }
 
-    /* ============ サイドバー開閉ボタンを目立たせる ============ */
-    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
+    /* ============ サイドバー開閉ボタンを超目立たせる（折りたたみ後でもクリック可能） ============ */
+    /* 折りたたみ状態のボタン（サイドバーを開く）— 全可能セレクタを総当たり */
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapseButton"],
+    button[kind="headerNoPadding"],
+    [data-testid="baseButton-headerNoPadding"] {
+        position: fixed !important;
+        top: 14px !important;
+        left: 14px !important;
         background: linear-gradient(135deg, #d4af37, #b8932d) !important;
-        border-radius: 8px !important;
         color: #0a0e27 !important;
-        padding: 8px !important;
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+        min-width: 56px !important;
+        min-height: 44px !important;
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
         z-index: 999999 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
     }
-    [data-testid="stSidebarCollapseButton"] svg, [data-testid="collapsedControl"] svg {
+    [data-testid="stSidebarCollapsedControl"] svg,
+    [data-testid="collapsedControl"] svg,
+    [data-testid="stSidebarCollapseButton"] svg,
+    button[kind="headerNoPadding"] svg {
         color: #0a0e27 !important;
         fill: #0a0e27 !important;
+        width: 24px !important;
+        height: 24px !important;
+    }
+    /* ホバー時 */
+    [data-testid="stSidebarCollapsedControl"]:hover,
+    [data-testid="collapsedControl"]:hover {
+        background: linear-gradient(135deg, #f4e4a1, #d4af37) !important;
+        transform: translateY(-2px) !important;
     }
 
     /* ============ レスポンシブ：タブレット (≤960px) ============ */
@@ -688,7 +717,7 @@ st.markdown(
         <div class="subtitle">THE ULTIMATE RESELLING ORACLE</div>
         <div class="hero-tagline">触れた商品を、すべて利益に変える</div>
         <div class="mobile-hint" style="display:none;color:#9ca3c4;font-size:0.78rem;margin-top:1rem;padding:0.5rem 1rem;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:8px;">
-            ← 左上の <span style="color:#f4e4a1;font-weight:700;">▶</span> ボタンで設定メニュー
+            ← 左上の <span style="color:#f4e4a1;font-weight:700;">☰ メニュー</span> ボタンでサイドバー
         </div>
     </div>
     <style>
@@ -698,6 +727,75 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True,
+)
+
+# ========== 常時表示の「☰ メニュー」ボタン（JS埋め込み） ==========
+# Streamlitのデフォルト折りたたみボタンが小さすぎる/見えなくなる問題への対策
+components.html(
+    """
+<style>
+#midas-menu-btn {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 2147483647;
+    background: linear-gradient(135deg, #d4af37, #b8932d);
+    color: #0a0e27;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+#midas-menu-btn:hover {
+    background: linear-gradient(135deg, #f4e4a1, #d4af37);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.7);
+}
+</style>
+<script>
+(function() {
+    const parentDoc = window.parent.document;
+
+    function ensureMenuBtn() {
+        if (parentDoc.getElementById('midas-menu-btn')) return;
+        const btn = parentDoc.createElement('button');
+        btn.id = 'midas-menu-btn';
+        btn.innerText = '☰ メニュー';
+        btn.title = 'サイドバーを開く';
+        btn.onclick = function() {
+            const selectors = [
+                '[data-testid="stSidebarCollapsedControl"]',
+                '[data-testid="collapsedControl"]',
+                '[data-testid="stSidebarCollapseButton"]',
+                'button[kind="headerNoPadding"]',
+                '[data-testid="baseButton-headerNoPadding"]',
+                'button[aria-label="Open sidebar"]',
+                'button[aria-label="Close sidebar"]',
+            ];
+            for (const sel of selectors) {
+                const el = parentDoc.querySelector(sel);
+                if (el && el.id !== 'midas-menu-btn') {
+                    el.click();
+                    return;
+                }
+            }
+        };
+        parentDoc.body.appendChild(btn);
+    }
+
+    // 初期実行＋500msごとに再確認（Streamlitの再レンダリングに対応）
+    ensureMenuBtn();
+    setInterval(ensureMenuBtn, 800);
+})();
+</script>
+    """,
+    height=0,
 )
 
 # ========== サイドバー（先に描画してuser_keyを取得） ==========
