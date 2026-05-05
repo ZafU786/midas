@@ -9,7 +9,6 @@ import os
 import html
 from pathlib import Path
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -542,10 +541,27 @@ st.markdown(
     }
     ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.5); }
 
-    /* Streamlitの邪魔な要素を非表示 */
+    /* Streamlitの邪魔な要素を非表示（サイドバー開閉ボタンは残す） */
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
-    header { visibility: hidden; }
+    /* headerのツールバーのみ非表示（Deploy/Share等） */
+    [data-testid="stToolbar"] { visibility: hidden !important; }
+    /* サイドバー開閉ボタンは常時表示 */
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="collapsedControl"] {
+        visibility: visible !important;
+        z-index: 999999 !important;
+    }
+    /* サイドバー開閉ボタンをゴールドにスタイリング */
+    [data-testid="stSidebarCollapsedControl"] button,
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="collapsedControl"] button {
+        background: linear-gradient(135deg, #d4af37, #b8932d) !important;
+        border-radius: 10px !important;
+        color: #0a0e27 !important;
+        box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4) !important;
+    }
 
     /* （サイドバー開閉ボタンのカスタムスタイルは削除：レイアウトを壊すため）
        代わりにJSで独立した「☰ メニュー」ボタンを画面左上に常時表示する */
@@ -677,86 +693,9 @@ st.markdown(
         <h1>MIDAS</h1>
         <div class="subtitle">THE ULTIMATE RESELLING ORACLE</div>
         <div class="hero-tagline">触れた商品を、すべて利益に変える</div>
-        <div class="mobile-hint" style="display:none;color:#9ca3c4;font-size:0.78rem;margin-top:1rem;padding:0.5rem 1rem;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:8px;">
-            ← 左上の <span style="color:#f4e4a1;font-weight:700;">☰ メニュー</span> ボタンでサイドバー
-        </div>
     </div>
-    <style>
-    @media (max-width: 640px) {
-        .mobile-hint { display: block !important; }
-    }
-    </style>
     """,
     unsafe_allow_html=True,
-)
-
-# ========== 常時表示の「☰ メニュー」ボタン（JS埋め込み） ==========
-# Streamlitのデフォルト折りたたみボタンが小さすぎる/見えなくなる問題への対策
-components.html(
-    """
-<style>
-#midas-menu-btn {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 2147483647;
-    background: linear-gradient(135deg, #d4af37, #b8932d);
-    color: #0a0e27;
-    border: none;
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-weight: 800;
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
-    transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
-}
-#midas-menu-btn:hover {
-    background: linear-gradient(135deg, #f4e4a1, #d4af37);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.7);
-}
-</style>
-<script>
-(function() {
-    const parentDoc = window.parent.document;
-
-    function ensureMenuBtn() {
-        if (parentDoc.getElementById('midas-menu-btn')) return;
-        const btn = parentDoc.createElement('button');
-        btn.id = 'midas-menu-btn';
-        btn.innerText = '☰ メニュー';
-        btn.title = 'サイドバーを開く';
-        btn.onclick = function() {
-            const selectors = [
-                '[data-testid="stSidebarCollapsedControl"]',
-                '[data-testid="collapsedControl"]',
-                '[data-testid="stSidebarCollapseButton"]',
-                'button[kind="headerNoPadding"]',
-                '[data-testid="baseButton-headerNoPadding"]',
-                'button[aria-label="Open sidebar"]',
-                'button[aria-label="Close sidebar"]',
-            ];
-            for (const sel of selectors) {
-                const el = parentDoc.querySelector(sel);
-                if (el && el.id !== 'midas-menu-btn') {
-                    el.click();
-                    return;
-                }
-            }
-        };
-        parentDoc.body.appendChild(btn);
-    }
-
-    // 初期実行＋500msごとに再確認（Streamlitの再レンダリングに対応）
-    ensureMenuBtn();
-    setInterval(ensureMenuBtn, 800);
-})();
-</script>
-    """,
-    height=0,
 )
 
 # ========== サイドバー（先に描画してuser_keyを取得） ==========
